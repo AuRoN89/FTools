@@ -78,7 +78,7 @@ Line 189	=	Unknown
 Line 190	=	Unknown
 Line 191	=	Unknown
 
-Line 255	=	Average fuel unit icon on trip computer page witn 'vehicle display' setting ON
+Line 249	=	Average fuel unit icon on trip computer page witn 'vehicle display' setting ON
 
 Line 255	=	Upper left icon on trip computer page which contain 4 indicators
 Line 256	=	Upper right icon on trip computer page which contain 4 indicators
