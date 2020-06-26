@@ -78,6 +78,10 @@ Line 189	=	Unknown
 Line 190	=	Unknown
 Line 191	=	Unknown
 
+Line 255	=	Upper left icon on trip computer page which contain 4 indicators
+Line 256	=	Upper right icon on trip computer page which contain 4 indicators
+Line 257	=	Lower left icon on trip computer page which contain 4 indicators
+Line 258	=	Lower right icon on trip computer page which contain 4 indicators
 
 Line 669	=	Unknown
 Line 670	=	Unknown
@@ -130,6 +134,9 @@ Line 1046	=	Third Frame of First Set of the bottom Left ODO
 Line 1496	=	First Frame of Second Set of the bottom Left ODO 
 Line 1497	=	Second Frame of Second Set of the bottom Left ODO
 Line 1498	=	Third Frame of Second Set of the bottom Left ODO
+
+Line 1503	=	Average fuel icon on trip computer page witn 'vehicle display' setting ON
+Line 1545	=	Average fuel icon on trip computer page witn 'vehicle display' setting OFF
 
 Line 1756	=	Unknown
 Line 1757	=	Unknown
