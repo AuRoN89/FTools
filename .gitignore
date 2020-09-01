@@ -1,3 +1,17 @@
 /VbfEditor/bin/
 /ImgSectionParser/bin/
 /EifViewer/bin/
+
+# CMake
+cmake-build-*/
+*.cmake
+CMakeCache.txt
+Makefile
+CMakeFiles
+
+.DS_Store
+*.a
+*/bin/*
+/bin/*
+install_manifest.txt
+VbfeditConfig.h
