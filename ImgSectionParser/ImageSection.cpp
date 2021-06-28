@@ -25,6 +25,7 @@ static const char* H_U4 = "Palette";
 static const char* H_U5 = "Terminator";
 
 using namespace rapidjson;
+using namespace std;
 
 void ImageSection::GetItemData(const vector<uint8_t>& bin_data, const char* fileName, vector<uint8_t>& out) {
 
@@ -91,7 +92,7 @@ void ImageSection::Parse(const vector<uint8_t> &bin_data) {
         GetItemData(bin_data, ttf_header_ptr[i].fileName, item.data);
     }
 }
-void ImageSection::HeaderToCsv(const fs::path& csv_file_path) {
+void ImageSection::HeaderToCsv(const std::vector<HeaderRecord>& header_data, const fs::path& csv_file_path) {
     std::ofstream export_list (csv_file_path);
     export_list << H_WIDTH << ";"
             << H_HEIGHT << ";"
@@ -105,57 +106,62 @@ void ImageSection::HeaderToCsv(const fs::path& csv_file_path) {
             << H_U3 << ";"
             << H_U4 << endl;
 
-    for(const auto& hr : m_header_data) {
+    for(const auto& hr : header_data) {
         export_list << hr.width << ";"
                 << hr.height << ";"
                 << hr.X << ";"
                 << hr.Y << ";"
                 << (int)hr.type << ";"
-                << (int)hr.Z << ";"
-                << (int)hr.unk0 << ";"
+                << (int)hr.Z << ","
+                << (int)hr.intensity << ";"
                 << (int)hr.R << ";"
                 << (int)hr.G << ";"
                 << (int)hr.B << ";"
-                << (int)hr.A << endl;
+                << (int)hr.palette_id << endl;
     }
     export_list.close();
 }
 
-void ImageSection::HeaderFromCsv(const fs::path& csv_file_path) {
+std::vector<ImageSection::HeaderRecord> ImageSection::HeaderFromCsv(const fs::path &csv_file_path) {
 
-    m_header_data.clear();
-    m_header_data.reserve(2000);
+    std::vector<HeaderRecord> header_data;
+    header_data.reserve(2000);
+    try {
+        io::CSVReader<11> in(FTUtils::path2c_str(csv_file_path));
+        in.read_header(io::ignore_extra_column,
+                       H_WIDTH ,
+                       H_HEIGHT ,
+                       H_X ,
+                       H_Y ,
+                       H_TYPE ,
+                       H_Z ,
+                       H_U0 ,
+                       H_U1 ,
+                       H_U2 ,
+                       H_U3 ,
+                       H_U4  );
 
-    io::CSVReader<11> in(csv_file_path.string());
-    in.read_header(io::ignore_extra_column,
-                   H_WIDTH ,
-                   H_HEIGHT ,
-                   H_X ,
-                   H_Y ,
-                   H_TYPE ,
-                   H_Z ,
-                   H_U0 ,
-                   H_U1 ,
-                   H_U2 ,
-                   H_U3 ,
-                   H_U4  );
+        HeaderRecord hr = {};
 
-    HeaderRecord hr = {};
-
-    while(in.read_row(hr.width,
-                hr.height ,
-                hr.X ,
-                hr.Y ,
-                hr.type ,
-                hr.Z ,
-                hr.unk0 ,
-                hr.R ,
-                hr.G ,
-                hr.B ,
-                hr.A ))
-    {
-        m_header_data.push_back(hr);
+        while(in.read_row(hr.width,
+                          hr.height ,
+                          hr.X ,
+                          hr.Y ,
+                          hr.type ,
+                          hr.Z ,
+                          hr.intensity ,
+                          hr.R ,
+                          hr.G ,
+                          hr.B ,
+                          hr.palette_id ))
+        {
+            header_data.push_back(hr);
+        }
+    } catch (const std::exception& ex) {
+        throw runtime_error("Import CSV error. " + string(ex.what()));
     }
+
+    return header_data;
 }
 
 int ImageSection::Export(const fs::path &out_path, const string& name_prefix) {
@@ -171,7 +177,7 @@ int ImageSection::Export(const fs::path &out_path, const string& name_prefix) {
 
     // save header
     auto out_file_str = (name_prefix + "_header.csv");
-    HeaderToCsv(out_file_str);
+    HeaderToCsv(m_header_data, out_file_str);
     document.AddMember("header", Value(out_file_str.c_str(), allocator), allocator);
     document.AddMember("unknown-int", Value().SetUint64(m_unknownInt), allocator);
 

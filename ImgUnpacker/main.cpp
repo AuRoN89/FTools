@@ -21,6 +21,7 @@ static const char* ITEM_PALETTE_CRC = "palette_crc16";
 static const char* CUSTOM_DIR = "custom";
 
 namespace fs = std::filesystem;
+using namespace std;
 
 struct Opts {
     fs::path conf_p;
@@ -142,7 +143,7 @@ int UnpackImg(const fs::path& in_path, const fs::path& out_path) {
     //unpack image section
     ImageSection img_sec;
     img_sec.Parse(img_sec_bin);
-    img_sec.HeaderToCsv(out_path / "header_lines.csv");
+    img_sec.HeaderToCsv(img_sec.getHeaderData(), out_path / "header_lines.csv");
 
     //unpack eifs
     std::ofstream export_list (out_path / "export_list.csv");
@@ -350,21 +351,9 @@ int RepackResources(const fs::path& config_path, ImageSection& img_sec, const st
             } else {
 
                 // create eif from BMP and save it to vector
-                EIF::EifImageBase* eif;
-
-                if(res_csv_data.type == 8) {
-                    eif = new EIF::EifImage8bit();
-                } else if(res_csv_data.type == 32) {
-                    eif = new EIF::EifImage32bit();
-                } else if(res_csv_data.type == 16) {
-                    eif = new EIF::EifImage16bit();
-                } else {
-                    throw runtime_error("Unknown resource type " + res_name.string());
-                }
-
+                auto eif = EIF::EifConverter::makeEif(EIF::depthToEifType((int)res_csv_data.type));
                 eif->openBmp(res_path.string());
                 auto res_bin = eif->saveEifToVector();
-                delete eif;
 
                 CompressAndReplaceEIF(img_sec, res_csv_data.idx, res_bin, res_name.string());
             }

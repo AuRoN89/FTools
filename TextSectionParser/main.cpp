@@ -1,10 +1,13 @@
 //
-// Created by user on 25.05.2020.
+// Created by user on 06.12.2020.
 //
 #include <cxxopts.hpp>
-#include "ImageSection.h"
+#include <string>
+#include <filesystem>
+#include "TextSectionPacker.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 int main(int argc, char **argv)
 {
@@ -13,10 +16,10 @@ int main(int argc, char **argv)
         bool unpack = false;
         bool pack = false;
 
-        cxxopts::Options options("imgparcer", "Ford IPC images extractor");
+        cxxopts::Options options("textparser", "Ford IPC text resources extractor");
         options.add_options()
-                ("u,unpack","Extract resources form image section to destination dir", cxxopts::value<bool>(unpack))
-                ("p,pack","Pack image section", cxxopts::value<bool>(pack))
+                ("u,unpack","Extract text resources form to destination dir", cxxopts::value<bool>(unpack))
+                ("p,pack","Pack text section", cxxopts::value<bool>(pack))
                 ("i,input","Input file", cxxopts::value<string>())
                 ("o,output","Output directory", cxxopts::value<string>()->default_value(""))
                 ("h,help","Print help");
@@ -33,26 +36,16 @@ int main(int argc, char **argv)
             cerr << "please, specify input file" << endl;
             return -1;
         }
-        string in_path = result["input"].as<string>();
-        string out_path = result["output"].as<string>();
-        if(out_path.empty()) {
-            out_path = (fs::current_path() / "patched.bin").string();
-        } else {
-            fs::path p_out(out_path);
-            if(!fs::is_directory(p_out) && !fs::is_directory(p_out.parent_path())) {
-                cerr << "output dir not exists" << endl;
-                return -1;
-            }
+        fs::path in_path = result["input"].as<string>();
+        fs::path out_path = fs::current_path();
+        if(result.count("output")) {
+            out_path = result["output"].as<string>();
         }
 
         if(pack) {
-            ImageSection section;
-            section.Import(in_path);
-            section.SaveToFile(out_path);
+            TextSectionPacker::pack(in_path, out_path);
         } else if(unpack) {
-            ImageSection section;
-            section.ParseFile(in_path);
-            section.Export(out_path);
+            TextSectionPacker::unpack(FTUtils::fileToVector(in_path), out_path);
         } else {
             cerr << options.help() << endl;
             return -1;

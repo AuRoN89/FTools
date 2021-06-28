@@ -12,8 +12,7 @@ configure_file (
         "${PROJECT_BINARY_DIR}/VbfeditConfig.h"
 )
 
-# add the binary tree to the search path for include files
-# so that we will find TutorialConfig.h
+include_directories(../utils)
 include_directories("${PROJECT_BINARY_DIR}")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
@@ -23,11 +22,11 @@ include_directories(../cxxopts/include)
 include_directories(../CRCpp/inc)
 
 add_library(vbf VbfFile.cpp VbfFile.h)
+if(WIN32)
+    target_link_libraries(vbf ws2_32)
+endif()
+
 add_executable(vbfeditor main.cpp)
 target_link_libraries(vbfeditor vbf)
-
-if(WIN32)
-    target_link_libraries(vbfeditor ws2_32)
-endif()
 
 install(TARGETS vbfeditor)
