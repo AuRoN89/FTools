@@ -147,11 +147,11 @@ int UnpackImg(const fs::path& in_path, const fs::path& out_path) {
 
     //unpack eifs
     std::ofstream export_list (out_path / "export_list.csv");
-    export_list << ITEM_IDX << ","
-                << ITEM_NAME << ","
-                << ITEM_TYPE << ","
-                << ITEM_PALETTE_CRC << ","
-                << ITEM_WIDTH << ","
+    export_list << ITEM_IDX << ";"
+                << ITEM_NAME << ";"
+                << ITEM_TYPE << ";"
+                << ITEM_PALETTE_CRC << ";"
+                << ITEM_WIDTH << ";"
                 << ITEM_HEIGHT
                 << std::endl;
 
@@ -186,11 +186,11 @@ int UnpackImg(const fs::path& in_path, const fs::path& out_path) {
             crc = pal_crc.str();
         }
 
-        export_list << i << ","
-            << eif_name << ","
-            << ToColorDepth((image_type)header_p->type) << ","
-            << crc  << ","
-            << header_p->width << ","
+        export_list << i << ";"
+            << eif_name << ";"
+            << ToColorDepth((image_type)header_p->type) << ";"
+            << crc  << ";"
+            << header_p->width << ";"
             << header_p->height
             << std::endl;
     }
@@ -203,10 +203,10 @@ int UnpackImg(const fs::path& in_path, const fs::path& out_path) {
         std::vector<uint8_t> item_bin;
         img_sec.GetItemData(ImageSection::RT_TTF, i, item_bin);
         FTUtils::bufferToFile((ttf_path/ttf_name).string(), (char*)item_bin.data(), item_bin.size());
-        export_list << i << ","
-                    << ttf_name << ","
-                    << 0 << ","
-                    << 0 << ","  << 0 << "," << 0 << std::endl;
+        export_list << i << ";"
+                    << ttf_name << ";"
+                    << 0 << ";"
+                    << 0 << ";"  << 0 << ";" << 0 << std::endl;
     }
 
     export_list.close();
