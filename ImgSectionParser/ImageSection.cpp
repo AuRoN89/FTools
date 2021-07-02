@@ -112,7 +112,7 @@ void ImageSection::HeaderToCsv(const std::vector<HeaderRecord>& header_data, con
                 << hr.X << ";"
                 << hr.Y << ";"
                 << (int)hr.type << ";"
-                << (int)hr.Z << ","
+                << (int)hr.Z << ";"
                 << (int)hr.intensity << ";"
                 << (int)hr.R << ";"
                 << (int)hr.G << ";"
